@@ -1,0 +1,115 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOKaF6wcoyS1K3LtyYXI77V",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/2403A51L33/Myn-Personal/blob/main/Lab%204-1%20PfDS\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 5,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Xc6AuxaPZSUr",
+        "outputId": "19dbbd3a-c99d-4336-f9b4-10d109c05a32"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Enter total number of people (n): 4\n",
+            "Enter number of places (r): 4\n",
+            "Calculating 4P4 = 4! / (4 - 4)!\n",
+            "4! = 24\n",
+            "(4 - 4)! = 1\n",
+            "4P4 = 24 / 1 = 24.0\n",
+            "Simulate seating arrangement? (yes/no): yes\n",
+            "Total arrangements: 24\n",
+            "Arrangement 1: ('Person 1', 'Person 2', 'Person 3', 'Person 4')\n",
+            "Arrangement 2: ('Person 1', 'Person 2', 'Person 4', 'Person 3')\n",
+            "Arrangement 3: ('Person 1', 'Person 3', 'Person 2', 'Person 4')\n",
+            "Arrangement 4: ('Person 1', 'Person 3', 'Person 4', 'Person 2')\n",
+            "Arrangement 5: ('Person 1', 'Person 4', 'Person 2', 'Person 3')\n",
+            "Arrangement 6: ('Person 1', 'Person 4', 'Person 3', 'Person 2')\n",
+            "Arrangement 7: ('Person 2', 'Person 1', 'Person 3', 'Person 4')\n",
+            "Arrangement 8: ('Person 2', 'Person 1', 'Person 4', 'Person 3')\n",
+            "Arrangement 9: ('Person 2', 'Person 3', 'Person 1', 'Person 4')\n",
+            "Arrangement 10: ('Person 2', 'Person 3', 'Person 4', 'Person 1')\n",
+            "Arrangement 11: ('Person 2', 'Person 4', 'Person 1', 'Person 3')\n",
+            "Arrangement 12: ('Person 2', 'Person 4', 'Person 3', 'Person 1')\n",
+            "Arrangement 13: ('Person 3', 'Person 1', 'Person 2', 'Person 4')\n",
+            "Arrangement 14: ('Person 3', 'Person 1', 'Person 4', 'Person 2')\n",
+            "Arrangement 15: ('Person 3', 'Person 2', 'Person 1', 'Person 4')\n",
+            "Arrangement 16: ('Person 3', 'Person 2', 'Person 4', 'Person 1')\n",
+            "Arrangement 17: ('Person 3', 'Person 4', 'Person 1', 'Person 2')\n",
+            "Arrangement 18: ('Person 3', 'Person 4', 'Person 2', 'Person 1')\n",
+            "Arrangement 19: ('Person 4', 'Person 1', 'Person 2', 'Person 3')\n",
+            "Arrangement 20: ('Person 4', 'Person 1', 'Person 3', 'Person 2')\n",
+            "Arrangement 21: ('Person 4', 'Person 2', 'Person 1', 'Person 3')\n",
+            "Arrangement 22: ('Person 4', 'Person 2', 'Person 3', 'Person 1')\n",
+            "Arrangement 23: ('Person 4', 'Person 3', 'Person 1', 'Person 2')\n",
+            "Arrangement 24: ('Person 4', 'Person 3', 'Person 2', 'Person 1')\n"
+          ]
+        }
+      ],
+      "source": [
+        "def factorial(n):\n",
+        "    if n == 0 or n == 1:\n",
+        "        return 1\n",
+        "    else:\n",
+        "        return n * factorial(n - 1)\n",
+        "\n",
+        "def permutation(n, r):\n",
+        "    if n < r:\n",
+        "        raise ValueError(\"n must be greater than or equal to r\")\n",
+        "    return factorial(n) / factorial(n - r)\n",
+        "\n",
+        "def main():\n",
+        "    n = int(input(\"Enter total number of people (n): \"))\n",
+        "    r = int(input(\"Enter number of places (r): \"))\n",
+        "    try:\n",
+        "        result = permutation(n, r)\n",
+        "        print(f\"Calculating {n}P{r} = {n}! / ({n} - {r})!\")\n",
+        "        print(f\"{n}! = {factorial(n)}\")\n",
+        "        print(f\"({n} - {r})! = {factorial(n - r)}\")\n",
+        "        print(f\"{n}P{r} = {factorial(n)} / {factorial(n - r)} = {result}\")\n",
+        "        simulate_seating = input(\"Simulate seating arrangement? (yes/no): \")\n",
+        "        if simulate_seating.lower() == \"yes\":\n",
+        "            people = [f\"Person {i+1}\" for i in range(n)]\n",
+        "            import itertools\n",
+        "            arrangements = list(itertools.permutations(people, r))\n",
+        "            print(f\"Total arrangements: {len(arrangements)}\")\n",
+        "            for i, arrangement in enumerate(arrangements):\n",
+        "                print(f\"Arrangement {i+1}: {arrangement}\")\n",
+        "    except ValueError as e:\n",
+        "        print(e)\n",
+        "if __name__ == \"__main__\":\n",
+        "    main()"
+      ]
+    }
+  ]
+}
