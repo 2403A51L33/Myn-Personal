@@ -1,0 +1,226 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyORFhlAmpEpwsVaKVt3eTRv",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/2403A51L33/Myn-Personal/blob/main/Drugs%20code\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 8,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "QsdNNRQ8j3UO",
+        "outputId": "dabd2ffc-f065-4787-81e6-0717b7ea8fc4"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "                 Model  Accuracy  Precision    Recall  F1-Score  \\\n",
+            "0  Logistic Regression  0.343750   0.350600  0.343750  0.338824   \n",
+            "1        Decision Tree  0.378472   0.378552  0.378472  0.376542   \n",
+            "2        Random Forest  0.288194   0.287300  0.288194  0.286006   \n",
+            "3    Gradient Boosting  0.309028   0.309680  0.309028  0.308767   \n",
+            "4                  SVM  0.347222   0.343706  0.347222  0.342977   \n",
+            "5                  KNN  0.281250   0.281874  0.281250  0.278703   \n",
+            "6          Naive Bayes       NaN        NaN       NaN       NaN   \n",
+            "7       MLP Neural Net  0.288194   0.290791  0.288194  0.287359   \n",
+            "\n",
+            "                                               Error  \n",
+            "0                                                NaN  \n",
+            "1                                                NaN  \n",
+            "2                                                NaN  \n",
+            "3                                                NaN  \n",
+            "4                                                NaN  \n",
+            "5                                                NaN  \n",
+            "6  Negative values in data passed to MultinomialN...  \n",
+            "7                                                NaN  \n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.11/dist-packages/sklearn/neural_network/_multilayer_perceptron.py:691: ConvergenceWarning: Stochastic Optimizer: Maximum iterations (1000) reached and the optimization hasn't converged yet.\n",
+            "  warnings.warn(\n"
+          ]
+        }
+      ],
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "from sklearn.preprocessing import LabelEncoder, StandardScaler\n",
+        "from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score\n",
+        "\n",
+        "# Models\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.tree import DecisionTreeClassifier\n",
+        "from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier\n",
+        "from sklearn.svm import SVC\n",
+        "from sklearn.neighbors import KNeighborsClassifier\n",
+        "from sklearn.naive_bayes import MultinomialNB\n",
+        "from sklearn.neural_network import MLPClassifier\n",
+        "\n",
+        "# Load dataset\n",
+        "df = pd.read_csv(\"realistic_drug_labels_side_effects.csv\")\n",
+        "\n",
+        "# Target variable (example: approval_status)\n",
+        "y = df[\"approval_status\"]\n",
+        "\n",
+        "# Drop irrelevant/unique identifiers\n",
+        "X = df.drop([\"approval_status\", \"drug_name\", \"batch_number\", \"expiry_date\"], axis=1)\n",
+        "\n",
+        "# Encode categorical variables\n",
+        "for col in X.select_dtypes(include=[\"object\"]).columns:\n",
+        "    X[col] = LabelEncoder().fit_transform(X[col])\n",
+        "\n",
+        "# Encode target\n",
+        "y = LabelEncoder().fit_transform(y)\n",
+        "\n",
+        "# Train-test split\n",
+        "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)\n",
+        "\n",
+        "# Scale numerical features\n",
+        "scaler = StandardScaler()\n",
+        "X_train = scaler.fit_transform(X_train)\n",
+        "X_test = scaler.transform(X_test)\n",
+        "\n",
+        "# List of models\n",
+        "models = {\n",
+        "    \"Logistic Regression\": LogisticRegression(max_iter=1000),\n",
+        "    \"Decision Tree\": DecisionTreeClassifier(),\n",
+        "    \"Random Forest\": RandomForestClassifier(),\n",
+        "    \"Gradient Boosting\": GradientBoostingClassifier(),\n",
+        "    \"SVM\": SVC(),\n",
+        "    \"KNN\": KNeighborsClassifier(),\n",
+        "    \"Naive Bayes\": MultinomialNB(),\n",
+        "    \"MLP Neural Net\": MLPClassifier(max_iter=1000)\n",
+        "}\n",
+        "\n",
+        "# Results storage\n",
+        "results = []\n",
+        "\n",
+        "# Train & evaluate models\n",
+        "for name, model in models.items():\n",
+        "    try:\n",
+        "        model.fit(X_train, y_train)\n",
+        "        y_pred = model.predict(X_test)\n",
+        "        results.append({\n",
+        "            \"Model\": name,\n",
+        "            \"Accuracy\": accuracy_score(y_test, y_pred),\n",
+        "            \"Precision\": precision_score(y_test, y_pred, average='weighted', zero_division=0),\n",
+        "            \"Recall\": recall_score(y_test, y_pred, average='weighted'),\n",
+        "            \"F1-Score\": f1_score(y_test, y_pred, average='weighted')\n",
+        "        })\n",
+        "    except Exception as e:\n",
+        "        results.append({\"Model\": name, \"Error\": str(e)})\n",
+        "\n",
+        "# Convert to DataFrame\n",
+        "results_df = pd.DataFrame(results)\n",
+        "print(results_df)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "faf6ccc5",
+        "outputId": "2edb8c29-5eb2-42f0-dad6-058172fd788a"
+      },
+      "source": [
+        "import os\n",
+        "print(os.listdir('.'))"
+      ],
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "['.config', 'Realistic Drug.zip', 'sample_data']\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "779f580f",
+        "outputId": "8dd61a08-2cb7-44fa-b707-d85eb3f0a708"
+      },
+      "source": [
+        "import zipfile\n",
+        "import os\n",
+        "\n",
+        "# Define the path to the zip file\n",
+        "zip_file_path = 'Realistic Drug.zip'\n",
+        "\n",
+        "# Define the directory to extract to (current directory in this case)\n",
+        "extract_dir = '.'\n",
+        "\n",
+        "# Create the extraction directory if it doesn't exist\n",
+        "os.makedirs(extract_dir, exist_ok=True)\n",
+        "\n",
+        "# Open the zip file in read mode\n",
+        "with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:\n",
+        "    # Extract all the contents of the zip file to the specified directory\n",
+        "    zip_ref.extractall(extract_dir)\n",
+        "\n",
+        "print(f\"'{zip_file_path}' extracted to '{extract_dir}'\")"
+      ],
+      "execution_count": 7,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "'Realistic Drug.zip' extracted to '.'\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "7d6c398d"
+      },
+      "source": [
+        "import os\n",
+        "print(os.listdir('.'))"
+      ],
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
